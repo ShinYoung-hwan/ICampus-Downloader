@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "ICampus Downloader",
+  "version": "0.1.0",
+  "description": "Download SKKU Icampus video & audio smartly!",
+
+  "web_accessible_resources": [
+    {
+      "matches": ["<all_urls>"],
+      "resources": ["download30gray.png", "download30white.png"]
+    }
+  ],
+
+  "content_scripts": [
+    {
+      "css": ["content.css"],
+      "js": ["content.js"],
+      "matches": ["https://lcms.skku.edu/*"],
+      "all_frames": true
+    }
+  ]
+}
