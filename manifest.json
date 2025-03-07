@@ -2,12 +2,27 @@
   "manifest_version": 3,
   "name": "ICampus Downloader",
   "version": "0.1.0",
-  "description": "Download SKKU Icampus video & audio smartly!",
+  "description": "Download SKKU Icampus video smartly!",
+
+  "icons": {
+    "16": "images/icons16.png",
+    "32": "images/icons32.png",
+    "48": "images/icons48.png",
+    "128": "images/icons128.png"
+  },
+
+  "action": {
+    "default_popup": "popup/popup.html"
+  },
 
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": ["download30gray.png", "download30white.png"]
+      "resources": [
+        "images/download30gray.png",
+        "images/download30white.png",
+        "images/loading30.png"
+      ]
     }
   ],
 

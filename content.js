@@ -4,7 +4,7 @@ const default_srcs = new Set([
   "/settings/viewer/uniplayer/intro1.mp4",
 ]);
 
-const download_video = (url) => {
+const download_video = async (url) => {
   const title = document.querySelector(".vc-content-meta-title-text").innerHTML;
 
   const fname = prompt("저장할 파일 이름을 입력해주세요", title);
@@ -13,7 +13,12 @@ const download_video = (url) => {
     return; // 취소를 클릭한 경우 다운로드 하지 않는다.
   }
 
-  fetch(url)
+  const download_btn = document.querySelector("button.vc-pctrl-download-btn");
+  const default_onclick = download_btn.onclick;
+
+  download_btn.className = "vc-pctrl-loading-btn";
+  download_btn.onclick = () => {};
+  await fetch(url)
     .then((response) => response.blob())
     .then((blob) => {
       const a = document.createElement("a");
@@ -23,6 +28,8 @@ const download_video = (url) => {
       a.click();
       URL.revokeObjectURL(a.href);
     });
+  download_btn.className = "vc-pctrl-download-btn";
+  download_btn.onclick = default_onclick;
 };
 
 const is_preview_done = async (video_component) => {
@@ -72,6 +79,8 @@ const interval_video_load = setInterval(() => {
 
   // 다운로드 버튼 클릭시
   const play_btn = document.querySelector(".vc-front-screen-play-btn");
+  const confirm_dialog = document.querySelector("#confirm-dialog");
+  const confirm_btn = document.querySelector("div.confirm-ok-btn");
   const video1 = document.querySelector("#video-play-video1");
   const video2 = document.querySelector("#video-play-video2");
 
@@ -82,9 +91,11 @@ const interval_video_load = setInterval(() => {
       play_btn.style.display = "none"; // 안보이게 감추기
     }
 
-    //  2. preview skip
-    while (!(await is_preview_done(video1)))
+    //  2. preview skip && confirm 메세지창 skip
+    while (!(await is_preview_done(video1))) {
+      if (confirm_dialog.style.display === "table") confirm_btn.click();
       await new Promise((resolve) => setTimeout(resolve, 100));
+    }
 
     //  3. url parsing
     //    3.1 video 1개
@@ -107,12 +118,12 @@ const interval_video_load = setInterval(() => {
 
     // 단일 video
     if (type === 1) {
-      console.log("Download video 1");
+      console.log("Try to download video 1");
       download_video(video1_src);
     }
     // 좌우 video
     else if (type === 2) {
-      console.log("Download video 2");
+      console.log("Try to download video 2");
       download_video(video2_left_src);
     }
   };
@@ -122,4 +133,4 @@ const interval_video_load = setInterval(() => {
 setInterval(() => {
   const play_controller = document.querySelector("#play-controller");
   if (play_controller) play_controller.style.display = "block";
-}, 10);
+}, 50);

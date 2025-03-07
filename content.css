@@ -8,9 +8,21 @@
   cursor: pointer;
   background-color: black;
 
-  background-image: url("chrome-extension://pfgakaaagkdbidhdmdehnhhmmgniokkj/download30gray.png");
+  background-image: url("chrome-extension://pfgakaaagkdbidhdmdehnhhmmgniokkj/images/download30gray.png");
+}
+
+.vc-pctrl-loading-btn {
+  float: right;
+  width: 30px;
+  height: 27px;
+  /* outline: 0; */
+  border: 0px;
+  border-radius: 0.25rem;
+  background-color: black;
+
+  background-image: url("chrome-extension://pfgakaaagkdbidhdmdehnhhmmgniokkj/images/loading30.png");
 }
 
 .vc-pctrl-download-btn:hover {
-  background-image: url("chrome-extension://pfgakaaagkdbidhdmdehnhhmmgniokkj/download30white.png");
+  background-image: url("chrome-extension://pfgakaaagkdbidhdmdehnhhmmgniokkj/images/download30white.png");
 }
