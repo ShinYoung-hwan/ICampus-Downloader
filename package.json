@@ -3,8 +3,14 @@
   "version": "0.1.0",
   "description": "Download icampus video smartly!",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc",
+    "watch": "npx tsc --watch"
   },
   "author": "YH Shin",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chrome": "^0.1.6",
+    "typescript": "^5.9.2"
+  }
 }

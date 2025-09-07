@@ -29,7 +29,7 @@
   "content_scripts": [
     {
       "css": ["content/content.css"],
-      "js": ["content/content.js"],
+      "js": ["dist/content-script.js"],
       "matches": ["https://lcms.skku.edu/*"],
       "all_frames": true
     }
