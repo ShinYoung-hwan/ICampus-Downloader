@@ -11,14 +11,24 @@ function insertDownloadButton() {
   downloadBtn.title = '다운로드';
   downloadBtn.textContent = '⬇'; // 아이콘 또는 텍스트
 
-
   playerBtnsBar.appendChild(downloadBtn);
 
   downloadBtn.onclick = async () => {
-    // 비디오 src 추출 (단일 비디오 기준)
-    const videoComponent = document.querySelector('div#video-play-video2');
-    const videoElem = videoComponent?.querySelector('video.vc-vplay-video1');
-    const videoUrl = videoElem?.getAttribute('src');
+    // 비디오 src 추출 
+    // 단일 비디오
+    let videoComponent = document.querySelector('div#video-play-video1');
+    let videoElem = videoComponent?.querySelector('video.vc-vplay-video1');
+    let videoUrl = videoElem?.getAttribute('src');
+    if (videoUrl) {
+      await startDownload(videoUrl);
+      return;
+    }
+
+    // 듀얼 비디오
+    // TODO: 추후 듀얼 비디오 선택 기능 추가
+    videoComponent = document.querySelector('div#video-play-video2');
+    videoElem = videoComponent?.querySelector('video.vc-vplay-video1');
+    videoUrl = videoElem?.getAttribute('src');
     if (videoUrl) {
       await startDownload(videoUrl);
     } else {
@@ -30,13 +40,11 @@ function insertDownloadButton() {
 // 비디오가 로드될 때까지 MutationObserver로 감시 후 버튼 삽입
 const observerTarget = document.body;
 let observer: MutationObserver | null = null;
-let observerTimeout: number | null = null;
 function checkAndInsertButton() {
   const isVideoLoaded = !!document.querySelector('video.vc-vplay-video1');
   if (isVideoLoaded) {
     insertDownloadButton();
     if (observer) observer.disconnect();
-    if (observerTimeout) clearTimeout(observerTimeout);
   }
 }
 observer = new MutationObserver(() => {
@@ -51,7 +59,7 @@ async function startDownload(videoUrl: string): Promise<void> {
 
   const fname = window.prompt('저장할 파일 이름을 입력해주세요', title);
   if (fname === null) {
-    console.error('cancel to download video');
+    console.log('cancel to download video');
     return;
   }
 
@@ -119,8 +127,41 @@ async function startDownload(videoUrl: string): Promise<void> {
   }
 }
 
-// PDF 변환 함수 (추후 구현 예정)
+// PDF 변환 함수 (TODO: 추후 구현 예정)
 // export async function extractAndConvertPDF(filePath: string): Promise<string> {
 //   // FFmpeg.js 등으로 프레임 추출 및 PDF 변환 예정
 //   return "";
 // }
+
+// 다운로드 버튼 배경 이미지 설정
+function setDownloadBtnBackground(grayurl?: string, whiteurl?: string, loadingurl?: string) {
+  const style = document.createElement('style');
+  style.textContent = `
+    .vc-pctrl-download-btn {
+      background-image: url("${grayurl}") !important;
+    }
+    .vc-pctrl-download-btn:hover {
+      background-image: url("${whiteurl}") !important;
+    }
+    .vc-pctrl-loading-btn {
+      background-image: url("${loadingurl}") !important;
+    }
+  `;
+  
+  document.head.appendChild(style);
+}
+const grayImg = chrome.runtime.getURL('images/download30gray.png');
+const whiteImg = chrome.runtime.getURL('images/download30white.png');
+const loadingImg = chrome.runtime.getURL('images/loading30.png');
+setDownloadBtnBackground(grayImg, whiteImg, loadingImg);
+
+// // for debugging
+// setInterval(( ) => {
+//   const playerBtnsBar = document.querySelector('div#play-controller');
+//   if (playerBtnsBar) {
+//     console.log('playerBtnsBar display:', (playerBtnsBar as HTMLElement).style.display);
+//     (playerBtnsBar as HTMLElement).style.display = 'block';
+//   } else {
+//     console.log('no playerBtnsBar');
+//   }
+// }, 100); 

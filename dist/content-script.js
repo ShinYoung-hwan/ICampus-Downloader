@@ -22,10 +22,20 @@ function insertDownloadButton() {
     downloadBtn.textContent = '⬇'; // 아이콘 또는 텍스트
     playerBtnsBar.appendChild(downloadBtn);
     downloadBtn.onclick = () => __awaiter(this, void 0, void 0, function* () {
-        // 비디오 src 추출 (단일 비디오 기준)
-        const videoComponent = document.querySelector('div#video-play-video2');
-        const videoElem = videoComponent === null || videoComponent === void 0 ? void 0 : videoComponent.querySelector('video.vc-vplay-video1');
-        const videoUrl = videoElem === null || videoElem === void 0 ? void 0 : videoElem.getAttribute('src');
+        // 비디오 src 추출 
+        // 단일 비디오
+        let videoComponent = document.querySelector('div#video-play-video1');
+        let videoElem = videoComponent === null || videoComponent === void 0 ? void 0 : videoComponent.querySelector('video.vc-vplay-video1');
+        let videoUrl = videoElem === null || videoElem === void 0 ? void 0 : videoElem.getAttribute('src');
+        if (videoUrl) {
+            yield startDownload(videoUrl);
+            return;
+        }
+        // 듀얼 비디오
+        // TODO: 추후 듀얼 비디오 선택 기능 추가
+        videoComponent = document.querySelector('div#video-play-video2');
+        videoElem = videoComponent === null || videoComponent === void 0 ? void 0 : videoComponent.querySelector('video.vc-vplay-video1');
+        videoUrl = videoElem === null || videoElem === void 0 ? void 0 : videoElem.getAttribute('src');
         if (videoUrl) {
             yield startDownload(videoUrl);
         }
@@ -34,25 +44,30 @@ function insertDownloadButton() {
         }
     });
 }
-// 비디오가 로드될 때까지 반복 체크 후 버튼 삽입
-const intervalId = setInterval(() => {
+// 비디오가 로드될 때까지 MutationObserver로 감시 후 버튼 삽입
+const observerTarget = document.body;
+let observer = null;
+function checkAndInsertButton() {
     const isVideoLoaded = !!document.querySelector('video.vc-vplay-video1');
     if (isVideoLoaded) {
         insertDownloadButton();
-        clearInterval(intervalId);
+        if (observer)
+            observer.disconnect();
     }
-}, 100);
-// src/content-script.ts
-// 동영상 URL 추출 및 다운로드 버튼 UI 삽입
+}
+observer = new MutationObserver(() => {
+    checkAndInsertButton();
+});
+observer.observe(observerTarget, { childList: true, subtree: true });
+// 다운로드 로직 및 진행률 표시
 function startDownload(videoUrl) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a;
-        // 기존 content.js의 다운로드 로직을 TypeScript로 이식
+        var _a, _b;
         const titleElem = document.querySelector('.vc-content-meta-title-text');
-        const title = titleElem ? titleElem.innerHTML : 'video';
+        const title = titleElem ? (_a = titleElem.textContent) !== null && _a !== void 0 ? _a : 'video' : 'video';
         const fname = window.prompt('저장할 파일 이름을 입력해주세요', title);
         if (fname === null) {
-            console.error('cancel to download video');
+            console.log('cancel to download video');
             return;
         }
         const downloadBtn = document.querySelector('button.vc-pctrl-download-btn');
@@ -70,7 +85,6 @@ function startDownload(videoUrl) {
             progressBar.value = 0;
             const videoPlayer = document.querySelector('#video-play-wrapper');
             if (videoPlayer) {
-                // TODO: append last child
                 videoPlayer.appendChild(progressBar);
             }
             else {
@@ -80,7 +94,7 @@ function startDownload(videoUrl) {
         try {
             const response = yield fetch(videoUrl);
             const total = Number(response.headers.get('content-length')) || 0;
-            const reader = (_a = response.body) === null || _a === void 0 ? void 0 : _a.getReader();
+            const reader = (_b = response.body) === null || _b === void 0 ? void 0 : _b.getReader();
             if (!reader)
                 throw new Error('No readable stream');
             let loaded = 0;
@@ -115,8 +129,38 @@ function startDownload(videoUrl) {
         }
     });
 }
-// PDF 변환 함수 (추후 구현 예정)
+// PDF 변환 함수 (TODO: 추후 구현 예정)
 // export async function extractAndConvertPDF(filePath: string): Promise<string> {
 //   // FFmpeg.js 등으로 프레임 추출 및 PDF 변환 예정
 //   return "";
 // }
+// 다운로드 버튼 배경 이미지 설정
+function setDownloadBtnBackground(grayurl, whiteurl, loadingurl) {
+    const style = document.createElement('style');
+    style.textContent = `
+    .vc-pctrl-download-btn {
+      background-image: url("${grayurl}") !important;
+    }
+    .vc-pctrl-download-btn:hover {
+      background-image: url("${whiteurl}") !important;
+    }
+    .vc-pctrl-loading-btn {
+      background-image: url("${loadingurl}") !important;
+    }
+  `;
+    document.head.appendChild(style);
+}
+const grayImg = chrome.runtime.getURL('images/download30gray.png');
+const whiteImg = chrome.runtime.getURL('images/download30white.png');
+const loadingImg = chrome.runtime.getURL('images/loading30.png');
+setDownloadBtnBackground(grayImg, whiteImg, loadingImg);
+// // for debugging
+// setInterval(( ) => {
+//   const playerBtnsBar = document.querySelector('div#play-controller');
+//   if (playerBtnsBar) {
+//     console.log('playerBtnsBar display:', (playerBtnsBar as HTMLElement).style.display);
+//     (playerBtnsBar as HTMLElement).style.display = 'block';
+//   } else {
+//     console.log('no playerBtnsBar');
+//   }
+// }, 100); 
