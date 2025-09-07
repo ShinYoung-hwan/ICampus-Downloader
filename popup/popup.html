@@ -1,24 +1,26 @@
 <!DOCTYPE html>
-<html lang="kor">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <title>ICampus Downloader</title>
-    <link rel="stylesheet" href="popup.css" />
+  <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <h1>ICampus Downloader</h1>
-    <p>Download Icampus video smartly!</p>
+    <div class="popup-container">
+      <h1 class="popup-title">
+        <svg xmlns="http://www.w3.org/2000/svg" class="popup-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>
+        ICampus Downloader
+      </h1>
+      <p class="popup-desc">Download Icampus video smartly!</p>
 
-    <h2>How to use</h2>
-    <ol>
-      <li>다운로드 받고 싶은 강의 영상 강의콘텐츠 페이지로 이동합니다.</li>
-      <li>강의 컨트롤 바 좌측하단에 생긴 다운로드 버튼을 클릭합니다.</li>
-      <li>preview 영상이 완료될 때까지 기다립니다.</li>
-      <li>다운로드 받을 파일의 이름을 작성합니다.</li>
-      <li>
-        다운로드가 완료될 때까지 대기합니다.(해당 시간동안 다운로드 버튼은
-        비활성화 됩니다)
-      </li>
-    </ol>
+      <h2 class="popup-how-title">How to use</h2>
+      <ol class="popup-how-list">
+        <li>다운로드 받고 싶은 강의 영상 강의콘텐츠 페이지로 이동합니다.</li>
+        <li>다운로드 받을 동영상을 실행시킵니다.</li>
+        <li>강의 컨트롤 바 좌측하단에 생긴 다운로드 버튼을 클릭합니다.</li>
+        <li>다운로드 받을 파일의 이름을 작성합니다.</li>
+        <li>다운로드가 완료될 때까지 대기합니다.<span class="popup-how-note">(해당 시간동안 다운로드 버튼은 비활성화 됩니다)</span></li>
+      </ol>
+    </div>
   </body>
 </html>

@@ -26,3 +26,28 @@
 .vc-pctrl-download-btn:hover {
   background-image: url("chrome-extension://pfgakaaagkdbidhdmdehnhhmmgniokkj/images/download30white.png");
 }
+
+/* Icampus Download ProgressBar 스타일 */
+#icampus-download-progress {
+  display: block;
+  width: 100%;
+  height: 5px;
+  z-index: 9999;
+  position: absolute;
+  top: 0;
+}
+
+/* 채워지는 부분의 색상 */
+#icampus-download-progress::-webkit-progress-value {
+  background-color: #007bff; /* 파란색 */
+}
+
+/* 파이어폭스 지원 */
+#icampus-download-progress::-moz-progress-bar {
+  background-color: #007bff; /* 파란색 */
+}
+
+/* 막대 전체의 배경색 */
+#icampus-download-progress::-webkit-progress-bar {
+  background-color: #f3f3f3;
+}
