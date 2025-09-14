@@ -1,15 +1,14 @@
 // 비디오 로드 시 다운로드 버튼 삽입
 function insertDownloadButton() {
   // 이미 버튼이 있으면 중복 생성 방지
-  if (document.querySelector('button.vc-pctrl-download-btn')) return;
+  if (document.querySelector('div.vc-pctrl-download-btn')) return;
 
   const playerBtnsBar = document.querySelector('div.vc-pctrl-buttons-bar');
   if (!playerBtnsBar) return;
 
-  const downloadBtn = document.createElement('button');
+  const downloadBtn = document.createElement('div');
   downloadBtn.classList.add('vc-pctrl-download-btn');
   downloadBtn.title = '다운로드';
-  downloadBtn.textContent = '⬇'; // 아이콘 또는 텍스트
 
   playerBtnsBar.appendChild(downloadBtn);
 
@@ -63,7 +62,7 @@ async function startDownload(videoUrl: string): Promise<void> {
     return;
   }
 
-  const downloadBtn = document.querySelector('button.vc-pctrl-download-btn') as HTMLButtonElement | null;
+  const downloadBtn = document.querySelector('div.vc-pctrl-download-btn') as HTMLDivElement | null;
   const defaultOnClick = downloadBtn?.onclick;
 
   if (downloadBtn) {
@@ -88,6 +87,7 @@ async function startDownload(videoUrl: string): Promise<void> {
 
   }
 
+  // Fetch API로 다운로드 및 진행률 업데이트
   try {
     const response = await fetch(videoUrl);
     const total = Number(response.headers.get('content-length')) || 0;
@@ -121,11 +121,29 @@ async function startDownload(videoUrl: string): Promise<void> {
     progressBar?.remove();
   }
 
+  // 버튼 원래 상태로 복구
   if (downloadBtn) {
     downloadBtn.className = 'vc-pctrl-download-btn';
     downloadBtn.onclick = defaultOnClick ?? null;
   }
 }
+
+function setDownloadBtnBackground(downloadurl?: string, loadingurl?: string) {
+  const style = document.createElement('style');
+  style.textContent = `
+    .vc-pctrl-download-btn {
+      background-image: url("${downloadurl}")
+    }
+    .vc-pctrl-loading-btn {
+      background-image: url("${loadingurl}")
+    }
+  `;
+  
+  document.head.appendChild(style);
+}
+const downloadImg = chrome.runtime.getURL('images/download30.png');
+const loadingImg = chrome.runtime.getURL('images/loading30.png');
+setDownloadBtnBackground(downloadImg, loadingImg);
 
 // PDF 변환 함수 (TODO: 추후 구현 예정)
 // export async function extractAndConvertPDF(filePath: string): Promise<string> {
@@ -133,29 +151,7 @@ async function startDownload(videoUrl: string): Promise<void> {
 //   return "";
 // }
 
-// 다운로드 버튼 배경 이미지 설정
-function setDownloadBtnBackground(grayurl?: string, whiteurl?: string, loadingurl?: string) {
-  const style = document.createElement('style');
-  style.textContent = `
-    .vc-pctrl-download-btn {
-      background-image: url("${grayurl}") !important;
-    }
-    .vc-pctrl-download-btn:hover {
-      background-image: url("${whiteurl}") !important;
-    }
-    .vc-pctrl-loading-btn {
-      background-image: url("${loadingurl}") !important;
-    }
-  `;
-  
-  document.head.appendChild(style);
-}
-const grayImg = chrome.runtime.getURL('images/download30gray.png');
-const whiteImg = chrome.runtime.getURL('images/download30white.png');
-const loadingImg = chrome.runtime.getURL('images/loading30.png');
-setDownloadBtnBackground(grayImg, whiteImg, loadingImg);
-
-// // for debugging
+// for debugging
 // setInterval(( ) => {
 //   const playerBtnsBar = document.querySelector('div#play-controller');
 //   if (playerBtnsBar) {
